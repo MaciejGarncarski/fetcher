@@ -2,12 +2,15 @@
   "name": "@maciekdev/fetcher",
   "version": "0.1.0",
   "description": "HTTP client based on fetch API",
+  "private": "false",
   "type": "module",
   "author": {
     "name": "Maciej Garncarski",
     "email": "maciejgarncarski@protonmail.com",
     "url": "https://github.com/maciejgarncarski"
   },
+  "homepage": "https://github.com/maciejgarncarski/fetcher",
+  "url": "https://github.com/maciejgarncarski/fetcher/issue",
   "keywords": [],
   "license": "MIT",
   "scripts": {
