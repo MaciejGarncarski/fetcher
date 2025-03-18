@@ -27,3 +27,32 @@ yarn add @maciekdev/fetcher
 # or
 bun add  @maciekdev/fetcher
 ```
+
+## Example usage
+
+```ts
+import { z } from "zod";
+import { fetcher } from "@maciekdev/fetcher";
+
+const testSchema = z.object({
+  data: z.object({
+    id: z.number(),
+    username: z.string(),
+  }),
+});
+
+const response = await fetcher({
+  method: "GET",
+  url: "/",
+  schema: testSchema,
+});
+
+/*
+Typesafe response!
+
+data: {
+    id: number;
+    username: string;
+} | undefined
+*/
+```

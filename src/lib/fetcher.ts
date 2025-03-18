@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { canSendBody, parseUrl } from "../utils/utils.js";
+import { canSendBody } from "../utils/utils.js";
 import { ApiError } from "./api-error.js";
 
 type ResponseType = "json" | "text" | "arrayBuffer";
@@ -25,7 +25,6 @@ export type FetcherProperties<
   throwOnError?: boolean;
   signal?: AbortSignal;
   headers?: Record<string, string>;
-  baseAPIUrl: string;
   apiErrorSchema?: z.ZodSchema;
 };
 
@@ -55,7 +54,6 @@ export const fetcher = async <
   throwOnError = false,
   headers,
   signal,
-  baseAPIUrl,
   apiErrorSchema,
 }: FetcherProperties<R, M, S>): Promise<ReturnType<R, S>> => {
   try {
@@ -82,7 +80,7 @@ export const fetcher = async <
       });
     }
 
-    const response = await fetch(parseUrl(url, baseAPIUrl), {
+    const response = await fetch(url, {
       body: canSendBody(method)
         ? transformedBody instanceof FormData
           ? transformedBody
