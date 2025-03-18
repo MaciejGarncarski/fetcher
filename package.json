@@ -1,0 +1,41 @@
+{
+  "name": "@maciekdev/fetcher",
+  "version": "0.1.0",
+  "description": "HTTP client based on fetch API",
+  "type": "module",
+  "author": {
+    "name": "Maciej Garncarski",
+    "email": "maciejgarncarski@protonmail.com",
+    "url": "https://github.com/maciejgarncarski"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup ./src"
+  },
+  "engines": {
+    "node": ">=18.0"
+  },
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9",
+    "zod": "^3.24.2"
+  },
+  "packageManager": "pnpm@10.6.3"
+}
