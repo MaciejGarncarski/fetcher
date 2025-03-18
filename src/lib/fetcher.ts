@@ -90,10 +90,7 @@ export const fetcher = async <
         : undefined,
       credentials: "include",
       signal: signal,
-      headers: {
-        "Content-Type": "application/json",
-        ...headers,
-      },
+      headers: headers,
       method: method,
     });
 

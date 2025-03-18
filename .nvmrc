@@ -1,0 +1,3 @@
+# .npmrc
+
+node=22.x
