@@ -95,7 +95,7 @@ export const createFetcherInstance = ({
           : undefined,
         credentials: "include",
         signal: signal,
-        headers: headers,
+        headers: fetchHeaders,
         method: method,
       });
 
