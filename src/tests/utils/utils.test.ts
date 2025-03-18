@@ -1,4 +1,4 @@
-import { canSendBody } from "../../utils/utils.js";
+import { canSendBody, parseUrl } from "../../utils/utils.js";
 
 describe("canSendBody", () => {
   it("should throw an error when no method is provided", () => {
@@ -29,5 +29,17 @@ describe("canSendBody", () => {
   it("should return true for the PATCH method", () => {
     const result = canSendBody("PATCH");
     expect(result).toBe(true);
+  });
+});
+
+describe("parseUrl", () => {
+  it("should return the original URL if it starts with 'http'", () => {
+    const result = parseUrl("https://facebook.com", "http://mybaseurl");
+    expect(result).toBe("https://facebook.com");
+  });
+
+  it("should prepend the base API URL to the provided path", () => {
+    const result = parseUrl("/test", "http://mybaseurl");
+    expect(result).toBe("http://mybaseurl/test");
   });
 });

@@ -32,27 +32,26 @@ bun add  @maciekdev/fetcher
 
 ```ts
 import { z } from "zod";
-import { fetcher } from "@maciekdev/fetcher";
+import { createFetcherInstance } from "@maciekdev/fetcher";
 
-const testSchema = z.object({
-  data: z.object({
-    id: z.number(),
-    username: z.string(),
-  }),
+export const fetcher = createFetcherInstance({
+  baseURL: "https://myfabulousAPI.test",
 });
 
-const response = await fetcher({
+const zodSchema = z.object({
+  username: z.string(),
+});
+
+const myData = await fetcher({
   method: "GET",
-  url: "/",
-  schema: testSchema,
+  url: "/test-endpoint",
+  schema: zodSchema,
 });
 
+console.log(myData?.username);
 /*
-Typesafe response!
+username: string | undefined
 
-data: {
-    id: number;
-    username: string;
-} | undefined
+Typesafe!
 */
 ```

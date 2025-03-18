@@ -11,3 +11,7 @@ export function canSendBody(method: HTTPMethod) {
 
   return false;
 }
+
+export function parseUrl(url: string, baseURL: string) {
+  return url.startsWith("http") ? url : baseURL + url;
+}
