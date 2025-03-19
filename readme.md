@@ -4,6 +4,7 @@ A lightweight and simple fetch wrapper for Node.js and potentially the browser.
 
 [![NPM Version](https://img.shields.io/npm/v/@maciekdev/fetcher)](https://www.npmjs.com/package/@maciekdev/fetcher)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![spring-easing's badge](https://deno.bundlejs.com/?q=@maciekdev/fetcher&badge=simple&badge-style=flat)](https://bundlejs.com/?q=@maciekdev/fetcher)
 
 Fetcher provides a minimal and straightforward way to make HTTP requests using the familiar `fetch` API. It aims to simplify common use cases without adding unnecessary complexity.
 

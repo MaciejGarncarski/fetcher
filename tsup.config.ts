@@ -7,5 +7,10 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   dts: true,
-  entry: ["src", "!src/**/__tests__/**", "!src/**/*.test.*"],
+  entry: [
+    "src",
+    "!src/**/__tests__/**",
+    "!src/**/*.test.*",
+    "!**/__mocks__/**",
+  ],
 });
