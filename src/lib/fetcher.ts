@@ -45,123 +45,143 @@ export type CreateFetcherProperties = {
   apiErrorSchema?: z.ZodSchema;
 };
 
+type FetcherFunction = <
+  R extends ResponseType | undefined = "json",
+  M extends HttpMethod = "GET",
+  S extends z.ZodTypeAny = z.ZodTypeAny
+>(
+  fetcherOptions: FetcherProperties<R, M, S>
+) => Promise<ReturnType<R, S>>;
+
+const fetcher = async <
+  R extends ResponseType | undefined = "json",
+  M extends HttpMethod = "GET",
+  S extends z.ZodTypeAny = z.ZodTypeAny
+>({
+  body,
+  method,
+  responseType = "json",
+  schema,
+  url,
+  throwOnError = false,
+  headers,
+  signal,
+  apiErrorSchema,
+  baseURL = "",
+}: FetcherProperties<R, M, S> & {
+  baseURL?: string;
+  apiErrorSchema?: z.ZodSchema;
+}): Promise<ReturnType<R, S>> => {
+  try {
+    const transformedBody =
+      method === "POST"
+        ? body
+        : method === "PUT"
+        ? body
+        : method === "PATCH"
+        ? body
+        : null;
+
+    const fetchHeaders = new Headers();
+
+    const isMultipartRequest = transformedBody instanceof FormData;
+
+    if (!isMultipartRequest) {
+      fetchHeaders.append("Content-Type", "application/json");
+    }
+
+    if (headers) {
+      Object.entries(headers).forEach(([key, value]) => {
+        fetchHeaders.append(key, value);
+      });
+    }
+
+    const response = await fetch(parseUrl(url, baseURL), {
+      body: canSendBody(method)
+        ? transformedBody instanceof FormData
+          ? transformedBody
+          : JSON.stringify(transformedBody)
+        : undefined,
+      credentials: "include",
+      signal: signal,
+      headers: fetchHeaders,
+      method: method,
+    });
+
+    if (!response.ok) {
+      const responseJson = await response.json();
+
+      if (apiErrorSchema) {
+        const parsedResponse = apiErrorSchema.safeParse(responseJson);
+        if (!parsedResponse.success) {
+          throw new ApiError({
+            statusCode: response.status,
+            message: "error parsing failed",
+          });
+        }
+
+        if (parsedResponse.data.toastMessage) {
+          throw new ApiError({
+            message: "request failed",
+            statusCode: response.status,
+            toastMessage: parsedResponse.data.toastMessage,
+          });
+        }
+
+        if (parsedResponse.data.message) {
+          throw new ApiError({
+            statusCode: response.status,
+            message: parsedResponse.data.message,
+          });
+        }
+      }
+
+      throw new ApiError({
+        statusCode: response.status,
+        message: "request failed",
+      });
+    }
+
+    const transformedData =
+      responseType === "arrayBuffer"
+        ? await response.arrayBuffer()
+        : responseType === "text"
+        ? await response.text()
+        : responseType === "json"
+        ? await response.json()
+        : await response.json();
+
+    if (!schema) {
+      return transformedData as ReturnType<R, S>;
+    }
+
+    const parsed = schema.safeParse(transformedData);
+
+    if (!parsed.success) {
+      throw new ApiError({
+        statusCode: response.status,
+        message: "parsing failed",
+      });
+    }
+
+    return parsed.data;
+  } catch (error) {
+    if (throwOnError) {
+      throw error;
+    }
+
+    return null;
+  }
+};
+
 export const createFetcherInstance = ({
   baseURL = "",
   apiErrorSchema,
-}: CreateFetcherProperties) => {
-  return async <
-    R extends ResponseType | undefined = "json",
-    M extends HttpMethod = "GET",
-    S extends z.ZodTypeAny = z.ZodTypeAny
-  >({
-    body,
-    method,
-    responseType = "json",
-    schema,
-    url,
-    throwOnError = false,
-    headers,
-    signal,
-  }: FetcherProperties<R, M, S>): Promise<ReturnType<R, S>> => {
-    try {
-      const transformedBody =
-        method === "POST"
-          ? body
-          : method === "PUT"
-          ? body
-          : method === "PATCH"
-          ? body
-          : null;
+}: CreateFetcherProperties): FetcherFunction => {
+  const fetcherInstance = fetcher.bind({
+    baseURL,
+    apiErrorSchema,
+  });
 
-      const fetchHeaders = new Headers();
-
-      const isMultipartRequest = transformedBody instanceof FormData;
-
-      if (!isMultipartRequest) {
-        fetchHeaders.append("Content-Type", "application/json");
-      }
-
-      if (headers) {
-        Object.entries(headers).forEach(([key, value]) => {
-          fetchHeaders.append(key, value);
-        });
-      }
-
-      const response = await fetch(parseUrl(url, baseURL), {
-        body: canSendBody(method)
-          ? transformedBody instanceof FormData
-            ? transformedBody
-            : JSON.stringify(transformedBody)
-          : undefined,
-        credentials: "include",
-        signal: signal,
-        headers: fetchHeaders,
-        method: method,
-      });
-
-      if (!response.ok) {
-        const responseJson = await response.json();
-
-        if (apiErrorSchema) {
-          const parsedResponse = apiErrorSchema.safeParse(responseJson);
-          if (!parsedResponse.success) {
-            throw new ApiError({
-              statusCode: response.status,
-              message: "error parsing failed",
-            });
-          }
-
-          if (parsedResponse.data.toastMessage) {
-            throw new ApiError({
-              message: "request failed",
-              statusCode: response.status,
-              toastMessage: parsedResponse.data.toastMessage,
-            });
-          }
-
-          if (parsedResponse.data.message) {
-            throw new ApiError({
-              statusCode: response.status,
-              message: parsedResponse.data.message,
-            });
-          }
-        }
-
-        throw new ApiError({
-          statusCode: response.status,
-          message: "request failed",
-        });
-      }
-
-      const transformedData =
-        responseType === "arrayBuffer"
-          ? await response.arrayBuffer()
-          : responseType === "text"
-          ? await response.text()
-          : responseType === "json"
-          ? await response.json()
-          : await response.json();
-
-      if (!schema) {
-        return transformedData as ReturnType<R, S>;
-      }
-
-      const parsed = schema.safeParse(transformedData);
-
-      if (!parsed.success) {
-        throw new ApiError({
-          statusCode: response.status,
-          message: "parsing failed",
-        });
-      }
-
-      return parsed.data;
-    } catch (error) {
-      if (throwOnError) {
-        throw error;
-      }
-
-      return null;
-    }
-  };
+  return fetcherInstance;
 };
