@@ -11,6 +11,9 @@ importers:
       '@semantic-release/github':
         specifier: ^11.0.1
         version: 11.0.1(semantic-release@24.2.3(typescript@5.8.2))
+      '@semantic-release/npm':
+        specifier: ^12.0.1
+        version: 12.0.1(semantic-release@24.2.3(typescript@5.8.2))
       '@types/node':
         specifier: ^22.13.10
         version: 22.13.10
