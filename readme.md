@@ -25,7 +25,7 @@ npm install @maciekdev/fetcher
 # or
 yarn add @maciekdev/fetcher
 # or
-bun add  @maciekdev/fetcher
+bun add @maciekdev/fetcher
 ```
 
 ## Example usage

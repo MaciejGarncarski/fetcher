@@ -1,14 +1,19 @@
 import { z } from "zod";
-import { canSendBody, parseUrl } from "../utils/utils.js";
+import {
+  canSendBody,
+  getHeaders,
+  getBody,
+  parseUrl,
+  type Body,
+  type HTTPMethod,
+  type ResponseType,
+  transformBody,
+} from "../utils/utils.js";
 import { ApiError } from "./api-error.js";
-
-type ResponseType = "json" | "text" | "arrayBuffer";
-type HttpMethod = "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
-type Body = FormData | Record<string, unknown>;
 
 export type FetcherProperties<
   R extends ResponseType | undefined = "json",
-  M extends HttpMethod = "GET",
+  M extends HTTPMethod = "GET",
   S extends z.ZodTypeAny = z.ZodTypeAny
 > = {
   responseType?: R;
@@ -46,8 +51,8 @@ export type CreateFetcherProperties = {
 };
 
 type FetcherFunction = <
-  R extends ResponseType | undefined = "json",
-  M extends HttpMethod = "GET",
+  R extends ResponseType | undefined = ResponseType,
+  M extends HTTPMethod = HTTPMethod,
   S extends z.ZodTypeAny = z.ZodTypeAny
 >(
   fetcherOptions: FetcherProperties<R, M, S>
@@ -55,7 +60,7 @@ type FetcherFunction = <
 
 const fetcher = async <
   R extends ResponseType | undefined = "json",
-  M extends HttpMethod = "GET",
+  M extends HTTPMethod = "GET",
   S extends z.ZodTypeAny = z.ZodTypeAny
 >(
   {
@@ -77,35 +82,12 @@ const fetcher = async <
   }
 ): Promise<ReturnType<R, S>> => {
   try {
-    const transformedBody =
-      method === "POST"
-        ? body
-        : method === "PUT"
-        ? body
-        : method === "PATCH"
-        ? body
-        : null;
-
-    const fetchHeaders = new Headers();
-
-    const isMultipartRequest = transformedBody instanceof FormData;
-
-    if (!isMultipartRequest) {
-      fetchHeaders.append("Content-Type", "application/json");
-    }
-
-    if (headers) {
-      Object.entries(headers).forEach(([key, value]) => {
-        fetchHeaders.append(key, value);
-      });
-    }
+    const fetchBody = getBody(body, method);
+    const transformedFetchBody = transformBody(body, method);
+    const fetchHeaders = getHeaders(fetchBody, headers);
 
     const response = await fetch(parseUrl(url, baseURL), {
-      body: canSendBody(method)
-        ? transformedBody instanceof FormData
-          ? transformedBody
-          : JSON.stringify(transformedBody)
-        : undefined,
+      body: transformedFetchBody,
       credentials: "include",
       signal: signal,
       headers: fetchHeaders,
