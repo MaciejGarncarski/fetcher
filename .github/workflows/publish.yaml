@@ -31,4 +31,4 @@ jobs:
         shell: bash
         run: pnpm publish --access restricted --no-git-checks
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
