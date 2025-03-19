@@ -21,7 +21,7 @@ export function parseUrl(url: string, baseURL: string) {
 export function getHeaders(
   transformedBody?: Body | null,
   headers?: Record<string, string>
-) {
+): Headers {
   const fetchHeaders = new Headers();
 
   const isMultipartRequest = transformedBody instanceof FormData;
