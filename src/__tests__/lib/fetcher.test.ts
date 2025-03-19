@@ -5,7 +5,7 @@ import {
   postMockSchema,
   postsMock,
   setupHTTPMocks,
-} from "../mocks/http.js";
+} from "../__mocks__/http.js";
 import { ApiError } from "../../lib/api-error.js";
 
 setupHTTPMocks();
