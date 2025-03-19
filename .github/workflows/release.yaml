@@ -37,8 +37,6 @@ jobs:
         with:
           application_id: ${{ secrets.RELEASE_APP_ID }}
           application_private_key: ${{ secrets.RELEASE_APP_CERT }}
-
-      - name: Create release
-        run: pnpm dlx semantic-release
+      - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
