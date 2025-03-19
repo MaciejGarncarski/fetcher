@@ -34,12 +34,13 @@ describe("canSendBody", () => {
 
 describe("parseUrl", () => {
   it("should return the original URL if it starts with 'http'", () => {
-    const result = parseUrl("https://facebook.com", "http://mybaseurl");
+    const result = parseUrl("https://facebook.com", "http://localhost:3001");
     expect(result).toBe("https://facebook.com");
   });
 
   it("should prepend the base API URL to the provided path", () => {
-    const result = parseUrl("/test", "http://mybaseurl");
-    expect(result).toBe("http://mybaseurl/test");
+    const result = parseUrl("/test", "http://localhost:3001");
+    console.log(result);
+    expect(result).toBe("http://localhost:3001/test");
   });
 });

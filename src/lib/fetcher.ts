@@ -57,21 +57,25 @@ const fetcher = async <
   R extends ResponseType | undefined = "json",
   M extends HttpMethod = "GET",
   S extends z.ZodTypeAny = z.ZodTypeAny
->({
-  body,
-  method,
-  responseType = "json",
-  schema,
-  url,
-  throwOnError = false,
-  headers,
-  signal,
-  apiErrorSchema,
-  baseURL = "",
-}: FetcherProperties<R, M, S> & {
-  baseURL?: string;
-  apiErrorSchema?: z.ZodSchema;
-}): Promise<ReturnType<R, S>> => {
+>(
+  {
+    body,
+    method,
+    responseType = "json",
+    schema,
+    url,
+    throwOnError = false,
+    headers,
+    signal,
+  }: FetcherProperties<R, M, S>,
+  {
+    apiErrorSchema,
+    baseURL = "",
+  }: {
+    baseURL?: string;
+    apiErrorSchema?: z.ZodSchema;
+  }
+): Promise<ReturnType<R, S>> => {
   try {
     const transformedBody =
       method === "POST"
@@ -179,10 +183,5 @@ export const createFetcherInstance = ({
   baseURL = "",
   apiErrorSchema,
 }: CreateFetcherProperties): FetcherFunction => {
-  const fetcherInstance = fetcher.bind({
-    baseURL,
-    apiErrorSchema,
-  });
-
-  return fetcherInstance;
+  return (fetcherConfig) => fetcher(fetcherConfig, { baseURL, apiErrorSchema });
 };
