@@ -113,6 +113,7 @@ const fetcher = async <
 
       if (apiErrorSchema) {
         const parsedResponse = apiErrorSchema.safeParse(responseJson);
+
         if (!parsedResponse.success) {
           throw new ApiError({
             statusCode: response.status,
