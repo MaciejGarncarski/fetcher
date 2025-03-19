@@ -11,76 +11,71 @@ import {
 } from "../utils/utils.js";
 import { ApiError } from "./api-error.js";
 
-export type FetcherProperties<
-  R extends ResponseType | undefined = "json",
-  M extends HTTPMethod = "GET",
-  S extends z.ZodTypeAny = z.ZodTypeAny
+export type FetcherOptions<
+  TMethod extends HTTPMethod = "GET",
+  TResponseType extends ResponseType | undefined = "json",
+  TSchema extends z.ZodSchema = z.ZodSchema
 > = {
-  responseType?: R;
-  method: M;
+  responseType?: TResponseType;
+  method: TMethod;
   url: string;
-  body?: M extends "POST"
-    ? Body
-    : M extends "PUT"
-    ? Body
-    : M extends "PATCH"
-    ? Body
-    : never;
-  schema?: R extends "arrayBuffer" ? never : S;
+  body?: TMethod extends "POST" | "PUT" | "PATCH" ? Body : never;
+  schema?: TResponseType extends "arrayBuffer" ? never : TSchema;
   throwOnError?: boolean;
   signal?: AbortSignal;
   headers?: Record<string, string>;
 };
 
-type ReturnType<R extends ResponseType | undefined, S extends z.ZodTypeAny> =
-  | (R extends "arrayBuffer"
-      ? ArrayBuffer
-      : R extends "text"
-      ? S extends undefined
-        ? string
-        : z.infer<S>
-      : S extends undefined
-      ? Record<string, unknown>
-      : z.infer<S>)
-  | never
-  | null;
+type InferResponseType<TResponseType extends ResponseType | undefined> =
+  TResponseType extends "arrayBuffer"
+    ? ArrayBuffer
+    : TResponseType extends "text"
+    ? string
+    : Record<string, any>;
 
-export type CreateFetcherProperties = {
+type ReturnType<
+  TResponseType extends ResponseType | undefined,
+  TSchema extends z.ZodSchema | undefined
+> = TSchema extends z.ZodSchema
+  ? TResponseType extends "arrayBuffer"
+    ? never
+    : z.infer<TSchema>
+  : InferResponseType<TResponseType>;
+
+export type CreateFetcherOptions = {
   baseURL?: string;
   apiErrorSchema?: z.ZodSchema;
 };
 
 type FetcherFunction = <
-  R extends ResponseType | undefined = ResponseType,
-  M extends HTTPMethod = HTTPMethod,
-  S extends z.ZodTypeAny = z.ZodTypeAny
+  TMethod extends HTTPMethod = HTTPMethod,
+  TResponseType extends ResponseType | undefined = ResponseType,
+  TSchema extends z.ZodSchema = z.ZodSchema
 >(
-  fetcherOptions: FetcherProperties<R, M, S>
-) => Promise<ReturnType<R, S>>;
+  fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema>
+) => Promise<ReturnType<TResponseType, TSchema> | null>;
 
 const fetcher = async <
-  R extends ResponseType | undefined = "json",
-  M extends HTTPMethod = "GET",
-  S extends z.ZodTypeAny = z.ZodTypeAny
+  TMethod extends HTTPMethod = "GET",
+  TResponseType extends ResponseType | undefined = "json",
+  TSchema extends z.ZodSchema = z.ZodSchema
 >(
-  {
+  fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema>,
+  instanceOptions: CreateFetcherOptions
+): Promise<ReturnType<TResponseType, TSchema> | null> => {
+  const {
     body,
     method,
-    responseType = "json",
     schema,
     url,
     throwOnError = false,
     headers,
     signal,
-  }: FetcherProperties<R, M, S>,
-  {
-    apiErrorSchema,
-    baseURL = "",
-  }: {
-    baseURL?: string;
-    apiErrorSchema?: z.ZodSchema;
-  }
-): Promise<ReturnType<R, S>> => {
+    responseType = "json",
+  } = fetcherOptions;
+
+  const { apiErrorSchema, baseURL = "" } = instanceOptions;
+
   try {
     const fetchBody = getBody(body, method);
     const transformedFetchBody = transformBody(body, method);
@@ -139,7 +134,7 @@ const fetcher = async <
         : await response.json();
 
     if (!schema) {
-      return transformedData as ReturnType<R, S>;
+      return transformedData as ReturnType<TResponseType, TSchema>;
     }
 
     const parsed = schema.safeParse(transformedData);
@@ -151,7 +146,7 @@ const fetcher = async <
       });
     }
 
-    return parsed.data;
+    return parsed.data as ReturnType<TResponseType, TSchema>;
   } catch (error) {
     if (throwOnError) {
       throw error;
@@ -164,6 +159,6 @@ const fetcher = async <
 export const createFetcherInstance = ({
   baseURL = "",
   apiErrorSchema,
-}: CreateFetcherProperties): FetcherFunction => {
+}: CreateFetcherOptions): FetcherFunction => {
   return (fetcherConfig) => fetcher(fetcherConfig, { baseURL, apiErrorSchema });
 };
