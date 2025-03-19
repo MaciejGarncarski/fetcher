@@ -1,6 +1,6 @@
 {
   "name": "@maciekdev/fetcher",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "HTTP client based on fetch API",
   "type": "module",
   "author": {
@@ -51,8 +51,11 @@
     }
   },
   "devDependencies": {
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.1",
     "@types/node": "^22.13.10",
     "@vitest/coverage-v8": "^3.0.9",
+    "semantic-release": "^24.2.3",
     "tsup": "^8.4.0",
     "typescript": "^5.8.2",
     "vite": "^6.2.2",
