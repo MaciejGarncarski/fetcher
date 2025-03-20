@@ -1,3 +1,4 @@
+/* v8 ignore next */
 import { z } from "zod";
 
 export type ResponseType = "json" | "text" | "arrayBuffer";

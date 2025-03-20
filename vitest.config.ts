@@ -10,6 +10,7 @@ export default defineConfig({
         "**/*.config.ts",
         "**/index.*",
         "**/mocks/**",
+        "**/dist/**",
       ],
       provider: "v8",
     },

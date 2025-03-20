@@ -12,10 +12,7 @@ Fetcher provides a minimal and straightforward way to make HTTP requests using t
 
 - **Lightweight:** Minimal dependencies and a small footprint.
 - **Simple API:** Mirrors the standard `fetch` API for ease of use.
-- **Promise-based:** Leverages promises for asynchronous operations.
 - **TypeScript Support:** Written in TypeScript with type definitions included.
-- **Node.js Compatible:** Designed for use in Node.js environments.
-- **Potentially Isomorphic:** (To be confirmed/developed) May work in browser environments as well.
 
 ## Installation
 
@@ -56,3 +53,32 @@ username: string | undefined
 Typesafe!
 */
 ```
+
+## API reference
+
+### createFetcherInstance(options | undefined)
+
+**Parameters:**
+
+- `options`?: (CreateFetcherOptions) Configuration object for fetcher instance.
+
+### fetcher(options)
+
+**Parameters:**
+
+- `options`?: (FetcherOptions) Configuration object for fetcher instance.
+
+**Options config:**
+
+- `responseType`?: "json" | "text" | "arrayBuffer";
+- `method`: "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
+- `url`: string;
+- `body`?: FormData | Record<string, unknown>;
+- `schema`?: `zodSchema`;
+- `throwOnError`?: boolean;
+- `signal`?: AbortSignal;
+- `headers`?: Record<string, string>;
+
+## License
+
+MIT

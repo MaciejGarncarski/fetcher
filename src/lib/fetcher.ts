@@ -121,9 +121,10 @@ async function fetcher<
   }
 }
 
-export const createFetcherInstance = ({
-  baseURL = "",
-  apiErrorSchema,
-}: CreateFetcherOptions): FetcherFunction => {
+export const createFetcherInstance = (
+  fetcherInstanceOptions?: CreateFetcherOptions
+): FetcherFunction => {
+  const { apiErrorSchema, baseURL = "" } = fetcherInstanceOptions || {};
+
   return (fetcherConfig) => fetcher(fetcherConfig, { baseURL, apiErrorSchema });
 };
