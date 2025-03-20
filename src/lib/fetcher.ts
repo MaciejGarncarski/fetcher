@@ -1,68 +1,30 @@
 import { z } from "zod";
 import {
-  canSendBody,
   getHeaders,
   getBody,
   parseUrl,
-  type Body,
-  type HTTPMethod,
-  type ResponseType,
   transformBody,
 } from "../utils/utils.js";
 import { ApiError } from "./api-error.js";
 
-export type FetcherOptions<
-  TMethod extends HTTPMethod = "GET",
-  TResponseType extends ResponseType | undefined = "json",
-  TSchema extends z.ZodSchema = z.ZodSchema
-> = {
-  responseType?: TResponseType;
-  method: TMethod;
-  url: string;
-  body?: TMethod extends "POST" | "PUT" | "PATCH" ? Body : never;
-  schema?: TResponseType extends "arrayBuffer" ? never : TSchema;
-  throwOnError?: boolean;
-  signal?: AbortSignal;
-  headers?: Record<string, string>;
-};
+import type {
+  CreateFetcherOptions,
+  FetcherFunction,
+  FetcherOptions,
+  FetcherReturn,
+  HTTPMethod,
+  ResponseType,
+  TransformedData,
+} from "../types.js";
 
-type InferResponseType<TResponseType extends ResponseType | undefined> =
-  TResponseType extends "arrayBuffer"
-    ? ArrayBuffer
-    : TResponseType extends "text"
-    ? string
-    : Record<string, any>;
-
-type ReturnType<
-  TResponseType extends ResponseType | undefined,
-  TSchema extends z.ZodSchema | undefined
-> = TSchema extends z.ZodSchema
-  ? TResponseType extends "arrayBuffer"
-    ? never
-    : z.infer<TSchema>
-  : InferResponseType<TResponseType>;
-
-export type CreateFetcherOptions = {
-  baseURL?: string;
-  apiErrorSchema?: z.ZodSchema;
-};
-
-type FetcherFunction = <
-  TMethod extends HTTPMethod = HTTPMethod,
-  TResponseType extends ResponseType | undefined = ResponseType,
-  TSchema extends z.ZodSchema = z.ZodSchema
->(
-  fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema>
-) => Promise<ReturnType<TResponseType, TSchema> | null>;
-
-const fetcher = async <
-  TMethod extends HTTPMethod = "GET",
-  TResponseType extends ResponseType | undefined = "json",
-  TSchema extends z.ZodSchema = z.ZodSchema
+async function fetcher<
+  TMethod extends HTTPMethod,
+  TResponseType extends ResponseType | undefined = undefined,
+  TSchema extends z.ZodType | undefined = undefined
 >(
   fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema>,
   instanceOptions: CreateFetcherOptions
-): Promise<ReturnType<TResponseType, TSchema> | null> => {
+) {
   const {
     body,
     method,
@@ -133,28 +95,31 @@ const fetcher = async <
         ? await response.json()
         : await response.json();
 
-    if (!schema) {
-      return transformedData as ReturnType<TResponseType, TSchema>;
+    const transformedDataWithType =
+      transformedData as TransformedData<ResponseType>;
+
+    if (schema) {
+      const parsed = schema.safeParse(transformedDataWithType);
+
+      if (!parsed.success) {
+        throw new ApiError({
+          statusCode: response.status,
+          message: "parsing failed",
+        });
+      }
+
+      return parsed.data as FetcherReturn<TResponseType, TSchema>;
     }
 
-    const parsed = schema.safeParse(transformedData);
-
-    if (!parsed.success) {
-      throw new ApiError({
-        statusCode: response.status,
-        message: "parsing failed",
-      });
-    }
-
-    return parsed.data as ReturnType<TResponseType, TSchema>;
+    return transformedDataWithType as FetcherReturn<TResponseType, TSchema>;
   } catch (error) {
     if (throwOnError) {
       throw error;
     }
 
-    return null;
+    return null as FetcherReturn<TResponseType, TSchema>;
   }
-};
+}
 
 export const createFetcherInstance = ({
   baseURL = "",

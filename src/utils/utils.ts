@@ -1,8 +1,6 @@
-export type ResponseType = "json" | "text" | "arrayBuffer";
-export type HTTPMethod = "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
-export type Body = FormData | Record<string, unknown>;
+import type { Body, HTTPMethod } from "../types.js";
 
-export function canSendBody(method: HTTPMethod) {
+export function checkCanSendBody(method: HTTPMethod) {
   if (!method) {
     throw new Error("No method provided.");
   }
@@ -55,7 +53,7 @@ export function transformBody(
   body: Body | null | undefined,
   method: HTTPMethod = "GET"
 ) {
-  if (!canSendBody(method)) {
+  if (!checkCanSendBody(method)) {
     return undefined;
   }
 

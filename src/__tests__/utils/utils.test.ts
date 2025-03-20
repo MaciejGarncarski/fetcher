@@ -1,39 +1,39 @@
 import {
-  canSendBody,
+  checkCanSendBody,
   getHeaders,
   getBody,
   parseUrl,
   transformBody,
 } from "../../utils/utils.js";
 
-describe("canSendBody", () => {
+describe("checkCanSendBody", () => {
   it("should throw an error when no method is provided", () => {
     // @ts-ignore
-    expect(() => canSendBody()).toThrowError("No method provided.");
+    expect(() => checkCanSendBody()).toThrowError("No method provided.");
   });
 
   it("should return false for the GET method", () => {
-    const result = canSendBody("GET");
+    const result = checkCanSendBody("GET");
     expect(result).toBe(false);
   });
 
   it("should return false for the DELETE method", () => {
-    const result = canSendBody("DELETE");
+    const result = checkCanSendBody("DELETE");
     expect(result).toBe(false);
   });
 
   it("should return true for the POST method", () => {
-    const result = canSendBody("POST");
+    const result = checkCanSendBody("POST");
     expect(result).toBe(true);
   });
 
   it("should return true for the PUT method", () => {
-    const result = canSendBody("PUT");
+    const result = checkCanSendBody("PUT");
     expect(result).toBe(true);
   });
 
   it("should return true for the PATCH method", () => {
-    const result = canSendBody("PATCH");
+    const result = checkCanSendBody("PATCH");
     expect(result).toBe(true);
   });
 });
