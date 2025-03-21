@@ -18,11 +18,13 @@ export type FetcherOptions<
   throwOnError?: boolean;
   signal?: AbortSignal;
   headers?: Record<string, string>;
+  onErrorThrown?: (err: unknown) => void;
 };
 
 export type CreateFetcherOptions = {
   baseURL?: string;
   apiErrorSchema?: z.ZodType;
+  onErrorThrown?: (err: unknown) => void;
 };
 
 export type FetcherFunction = <

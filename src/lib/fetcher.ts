@@ -34,6 +34,7 @@ async function fetcher<
     headers,
     signal,
     responseType = "json",
+    onErrorThrown,
   } = fetcherOptions;
 
   const { apiErrorSchema, baseURL = "" } = instanceOptions;
@@ -114,6 +115,13 @@ async function fetcher<
     return transformedDataWithType as FetcherReturn<TResponseType, TSchema>;
   } catch (error) {
     if (throwOnError) {
+      if (instanceOptions.onErrorThrown) {
+        instanceOptions.onErrorThrown(error);
+      }
+
+      if (onErrorThrown) {
+        onErrorThrown(error);
+      }
       throw error;
     }
 
@@ -124,7 +132,12 @@ async function fetcher<
 export const createFetcherInstance = (
   fetcherInstanceOptions?: CreateFetcherOptions
 ): FetcherFunction => {
-  const { apiErrorSchema, baseURL = "" } = fetcherInstanceOptions || {};
+  const {
+    apiErrorSchema,
+    baseURL = "",
+    onErrorThrown,
+  } = fetcherInstanceOptions || {};
 
-  return (fetcherConfig) => fetcher(fetcherConfig, { baseURL, apiErrorSchema });
+  return (fetcherConfig) =>
+    fetcher(fetcherConfig, { baseURL, apiErrorSchema, onErrorThrown });
 };
