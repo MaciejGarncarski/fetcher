@@ -67,8 +67,8 @@ async function fetcher<
 
         if (parsedResponse.data.toastMessage) {
           throw new ApiError({
-            message: "request failed",
             statusCode: response.status,
+            message: parsedResponse.data.message,
             toastMessage: parsedResponse.data.toastMessage,
           });
         }
