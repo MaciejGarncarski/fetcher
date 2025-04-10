@@ -21,10 +21,9 @@ export type FetcherOptions<
   onErrorThrown?: (err: unknown) => void;
 };
 
-export type CreateFetcherOptions = {
+export type CreateFetcherOptions<T extends unknown> = {
   baseURL?: string;
-  apiErrorSchema?: z.ZodType;
-  onErrorThrown?: (err: unknown) => void;
+  onErrorThrown?: (err: T) => void;
 };
 
 export type FetcherFunction = <

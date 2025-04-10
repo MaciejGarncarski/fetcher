@@ -6,7 +6,7 @@ import {
   postsMock,
   setupHTTPMocks,
 } from "../__mocks__/http.js";
-import { ApiError } from "../../lib/api-error.js";
+import { FetcherError } from "../../lib/fetcher-error.js";
 
 setupHTTPMocks();
 
@@ -14,13 +14,8 @@ const fetcher = createFetcherInstance({
   baseURL: "https://dummy.endpoint",
 });
 
-const fetcherWithApiError = createFetcherInstance({
+const fetcherWithFetcherError = createFetcherInstance({
   baseURL: "https://dummy.endpoint",
-  apiErrorSchema: z.object({
-    message: z.string(),
-    toastMessage: z.optional(z.string()),
-    statusCode: z.number(),
-  }),
 });
 
 describe("fetcher", () => {
@@ -195,51 +190,51 @@ describe("fetcher", () => {
       ).rejects.toThrowError();
     });
 
-    it("should throw ApiError with correct message when API error schema validation fails", async () => {
+    it("should throw FetcherError with correct message when API error schema validation fails", async () => {
       try {
-        await fetcherWithApiError({
+        await fetcherWithFetcherError({
           method: "GET",
           url: "/error-invalid-schema",
           throwOnError: true,
         });
       } catch (error) {
-        if (error instanceof ApiError) {
+        if (error instanceof FetcherError) {
           expect(error.message).toEqual("error parsing failed");
         }
 
-        expect(error).toBeInstanceOf(ApiError);
+        expect(error).toBeInstanceOf(FetcherError);
       }
     });
 
-    it("should throw ApiError with toast message if has one", async () => {
+    it("should throw FetcherError with toast message if has one", async () => {
       try {
-        await fetcherWithApiError({
+        await fetcherWithFetcherError({
           method: "GET",
           url: "/error-valid-schema-toast",
           throwOnError: true,
         });
       } catch (error) {
-        if (error instanceof ApiError) {
+        if (error instanceof FetcherError) {
           expect(error.toastMessage).toEqual("Bar");
         }
 
-        expect(error).toBeInstanceOf(ApiError);
+        expect(error).toBeInstanceOf(FetcherError);
       }
     });
 
-    it("should throw ApiError with message if has one", async () => {
+    it("should throw FetcherError with message if has one", async () => {
       try {
-        await fetcherWithApiError({
+        await fetcherWithFetcherError({
           method: "GET",
           url: "/error-valid-schema",
           throwOnError: true,
         });
       } catch (error) {
-        if (error instanceof ApiError) {
+        if (error instanceof FetcherError) {
           expect(error.message).toEqual("Foo");
         }
 
-        expect(error).toBeInstanceOf(ApiError);
+        expect(error).toBeInstanceOf(FetcherError);
       }
     });
   });

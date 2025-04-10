@@ -1,16 +1,16 @@
-export type ApiErrorT = {
+export type FetcherErrorData = {
   message: string;
   statusCode?: number;
   toastMessage?: string;
   additionalMessage?: string;
 };
 
-export class ApiError extends Error {
+export class FetcherError extends Error {
   statusCode?: number;
   toastMessage?: string;
   additionalMessage?: string;
 
-  constructor(data: ApiErrorT) {
+  constructor(data: FetcherErrorData) {
     super(data.message);
     this.message = data.message;
     this.statusCode = data.statusCode;

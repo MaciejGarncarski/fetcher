@@ -1,11 +1,11 @@
-import { z } from "zod";
+import { unknown, z } from "zod";
 import {
   getHeaders,
   getBody,
   parseUrl,
   transformBody,
 } from "../utils/utils.js";
-import { ApiError } from "./api-error.js";
+import { FetcherError } from "./fetcher-error.js";
 
 import type {
   CreateFetcherOptions,
@@ -19,11 +19,12 @@ import type {
 
 async function fetcher<
   TMethod extends HTTPMethod,
+  TError extends unknown,
   TResponseType extends ResponseType | undefined = undefined,
   TSchema extends z.ZodType | undefined = undefined
 >(
   fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema>,
-  instanceOptions: CreateFetcherOptions
+  instanceOptions: CreateFetcherOptions<TError>
 ) {
   const {
     body,
@@ -37,7 +38,7 @@ async function fetcher<
     onErrorThrown,
   } = fetcherOptions;
 
-  const { apiErrorSchema, baseURL = "" } = instanceOptions;
+  const { baseURL = "" } = instanceOptions;
 
   try {
     const fetchBody = getBody(body, method);
@@ -54,37 +55,7 @@ async function fetcher<
 
     if (!response.ok) {
       const responseJson = await response.json();
-
-      if (apiErrorSchema) {
-        const parsedResponse = apiErrorSchema.safeParse(responseJson);
-
-        if (!parsedResponse.success) {
-          throw new ApiError({
-            statusCode: response.status,
-            message: "error parsing failed",
-          });
-        }
-
-        if (parsedResponse.data.toastMessage) {
-          throw new ApiError({
-            statusCode: response.status,
-            message: parsedResponse.data.message,
-            toastMessage: parsedResponse.data.toastMessage,
-          });
-        }
-
-        if (parsedResponse.data.message) {
-          throw new ApiError({
-            statusCode: response.status,
-            message: parsedResponse.data.message,
-          });
-        }
-      }
-
-      throw new ApiError({
-        statusCode: response.status,
-        message: "request failed",
-      });
+      throw responseJson;
     }
 
     const transformedData =
@@ -103,7 +74,7 @@ async function fetcher<
       const parsed = schema.safeParse(transformedDataWithType);
 
       if (!parsed.success) {
-        throw new ApiError({
+        throw new FetcherError({
           statusCode: response.status,
           message: "parsing failed",
         });
@@ -116,12 +87,13 @@ async function fetcher<
   } catch (error) {
     if (throwOnError) {
       if (instanceOptions.onErrorThrown) {
-        instanceOptions.onErrorThrown(error);
+        instanceOptions.onErrorThrown(error as TError);
       }
 
       if (onErrorThrown) {
         onErrorThrown(error);
       }
+
       throw error;
     }
 
@@ -129,15 +101,10 @@ async function fetcher<
   }
 }
 
-export const createFetcherInstance = (
-  fetcherInstanceOptions?: CreateFetcherOptions
+export const createFetcherInstance = <TError extends unknown>(
+  fetcherInstanceOptions?: CreateFetcherOptions<TError>
 ): FetcherFunction => {
-  const {
-    apiErrorSchema,
-    baseURL = "",
-    onErrorThrown,
-  } = fetcherInstanceOptions || {};
+  const { baseURL = "", onErrorThrown } = fetcherInstanceOptions || {};
 
-  return (fetcherConfig) =>
-    fetcher(fetcherConfig, { baseURL, apiErrorSchema, onErrorThrown });
+  return (fetcherConfig) => fetcher(fetcherConfig, { baseURL, onErrorThrown });
 };
