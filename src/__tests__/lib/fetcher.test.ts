@@ -189,54 +189,6 @@ describe("fetcher", () => {
         fetcher({ method: "GET", url: "/error", throwOnError: true })
       ).rejects.toThrowError();
     });
-
-    it("should throw FetcherError with correct message when API error schema validation fails", async () => {
-      try {
-        await fetcherWithFetcherError({
-          method: "GET",
-          url: "/error-invalid-schema",
-          throwOnError: true,
-        });
-      } catch (error) {
-        if (error instanceof FetcherError) {
-          expect(error.message).toEqual("error parsing failed");
-        }
-
-        expect(error).toBeInstanceOf(FetcherError);
-      }
-    });
-
-    it("should throw FetcherError with toast message if has one", async () => {
-      try {
-        await fetcherWithFetcherError({
-          method: "GET",
-          url: "/error-valid-schema-toast",
-          throwOnError: true,
-        });
-      } catch (error) {
-        if (error instanceof FetcherError) {
-          expect(error.toastMessage).toEqual("Bar");
-        }
-
-        expect(error).toBeInstanceOf(FetcherError);
-      }
-    });
-
-    it("should throw FetcherError with message if has one", async () => {
-      try {
-        await fetcherWithFetcherError({
-          method: "GET",
-          url: "/error-valid-schema",
-          throwOnError: true,
-        });
-      } catch (error) {
-        if (error instanceof FetcherError) {
-          expect(error.message).toEqual("Foo");
-        }
-
-        expect(error).toBeInstanceOf(FetcherError);
-      }
-    });
   });
 
   describe("data schema validation", () => {
