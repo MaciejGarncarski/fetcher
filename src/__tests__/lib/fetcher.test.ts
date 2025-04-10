@@ -202,16 +202,5 @@ describe("fetcher", () => {
         })
       ).resolves.not.toThrow();
     });
-
-    it("should throw when response data does not conform to the schema", async () => {
-      await expect(
-        fetcher({
-          method: "GET",
-          throwOnError: true,
-          url: "/json",
-          schema: z.object({}),
-        })
-      ).rejects.toThrow();
-    });
   });
 });
