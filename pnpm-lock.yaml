@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       zod:
-        specifier: ^4.0.0-beta.20250410T041907
-        version: 4.0.0-beta.20250410T041907
+        specifier: ^3.24.3
+        version: 3.24.3
     devDependencies:
       '@semantic-release/git':
         specifier: ^10.0.1
@@ -589,9 +589,6 @@ packages:
 
   '@vitest/utils@3.0.9':
     resolution: {integrity: sha512-ilHM5fHhZ89MCp5aAaM9uhfl1c2JdxVxl3McqsdVyVNN6JffnEen8UMCdRTzOhGXNQGo5GNL9QugHrz727Wnng==}
-
-  '@zod/core@0.2.0':
-    resolution: {integrity: sha512-0L7DpbqWt+W2IRbWBdWBkgxdacbco4sPdAzYA3AIc3jeFG9Css8jAcYGRjfVUiv+7CZGdLVnn747fcbcdIxpnw==}
 
   agent-base@7.1.3:
     resolution: {integrity: sha512-jRR5wdylq8CkOe6hei19GGZnxM6rBGwFl3Bg0YItGDimvjGtAvdZk4Pu6Cl4u4Igsws4a1fd1Vq3ezrhn4KmFw==}
@@ -2123,8 +2120,8 @@ packages:
     resolution: {integrity: sha512-GQHQqAopRhwU8Kt1DDM8NjibDXHC8eoh1erhGAJPEyveY9qqVeXvVikNKrDz69sHowPMorbPUrH/mx8c50eiBQ==}
     engines: {node: '>=18'}
 
-  zod@4.0.0-beta.20250410T041907:
-    resolution: {integrity: sha512-08UlLohDxklYh52NmT/j1R2BoppnHvXZJC2DHSogtTwHQM2VOunOxLkqCdGZ8DTk5dhT4Kyvc3RtvXKoRYWQIQ==}
+  zod@3.24.3:
+    resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
 
 snapshots:
 
@@ -2627,8 +2624,6 @@ snapshots:
       '@vitest/pretty-format': 3.0.9
       loupe: 3.1.3
       tinyrainbow: 2.0.0
-
-  '@zod/core@0.2.0': {}
 
   agent-base@7.1.3: {}
 
@@ -4050,6 +4045,4 @@ snapshots:
 
   yoctocolors@2.1.1: {}
 
-  zod@4.0.0-beta.20250410T041907:
-    dependencies:
-      '@zod/core': 0.2.0
+  zod@3.24.3: {}
