@@ -64,7 +64,7 @@
     "vitest": "^3.0.9"
   },
   "peerDependencies": {
-    "zod": "^4.0.0-beta.20250410T041907"
+    "zod": "^3.24.3"
   },
   "packageManager": "pnpm@10.6.3"
 }

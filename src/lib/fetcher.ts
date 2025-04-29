@@ -72,9 +72,15 @@ async function fetcher<
 
     if (schema) {
       const parsed = schema.safeParse(transformedDataWithType);
-
       if (!parsed.success) {
+        const errorMessages = parsed.error.issues.map((issue) => {
+          return `Field '${issue.path.join(
+            "."
+          )}' ${issue.message.toLowerCase()}`;
+        });
+
         throw new FetcherError({
+          additionalMessage: errorMessages.toString(),
           statusCode: response.status,
           message: "parsing failed",
         });
