@@ -8,7 +8,7 @@ import {
 import { FetcherError } from "./fetcher-error.js";
 
 import type {
-  CreateFetcherOptions,
+  FetcherInstanceOptions,
   FetcherFunction,
   FetcherOptions,
   FetcherReturn,
@@ -24,7 +24,7 @@ async function fetcher<
   TSchema extends z.ZodType | undefined = undefined
 >(
   fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema>,
-  instanceOptions: CreateFetcherOptions<TError>
+  instanceOptions: FetcherInstanceOptions<TError>
 ) {
   const {
     body,
@@ -91,7 +91,7 @@ async function fetcher<
 
     return transformedDataWithType as FetcherReturn<TResponseType, TSchema>;
   } catch (error) {
-    if (throwOnError) {
+    if (throwOnError || instanceOptions.throwOnError) {
       if (instanceOptions.onErrorThrown) {
         instanceOptions.onErrorThrown(error as TError);
       }
@@ -108,9 +108,14 @@ async function fetcher<
 }
 
 export const createFetcherInstance = <TError extends unknown>(
-  fetcherInstanceOptions?: CreateFetcherOptions<TError>
+  fetcherInstanceOptions?: FetcherInstanceOptions<TError>
 ): FetcherFunction => {
-  const { baseURL = "", onErrorThrown } = fetcherInstanceOptions || {};
+  const {
+    baseURL = "",
+    onErrorThrown,
+    throwOnError = false,
+  } = fetcherInstanceOptions || {};
 
-  return (fetcherConfig) => fetcher(fetcherConfig, { baseURL, onErrorThrown });
+  return (fetcherConfig) =>
+    fetcher(fetcherConfig, { baseURL, onErrorThrown, throwOnError });
 };

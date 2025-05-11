@@ -21,9 +21,10 @@ export type FetcherOptions<
   onErrorThrown?: (err: unknown) => void;
 };
 
-export type CreateFetcherOptions<T extends unknown> = {
-  baseURL?: string;
+export type FetcherInstanceOptions<T extends unknown> = {
   onErrorThrown?: (err: T) => void;
+  baseURL?: string;
+  throwOnError?: boolean;
 };
 
 export type FetcherFunction = <
