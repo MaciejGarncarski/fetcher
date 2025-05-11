@@ -60,7 +60,7 @@ Typesafe!
 
 **Parameters:**
 
-- `options`?: (CreateFetcherOptions) Configuration object for fetcher instance.
+- `options`?: (FetcherInstanceOptions) Configuration object for fetcher instance.
 
 ### fetcher(options)
 
