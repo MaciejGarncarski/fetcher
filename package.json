@@ -1,6 +1,6 @@
 {
   "name": "@maciekdev/fetcher",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "HTTP client based on fetch API",
   "type": "module",
   "author": {
