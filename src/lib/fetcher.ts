@@ -31,7 +31,7 @@ async function fetcher<
     method,
     schema,
     url,
-    throwOnError = false,
+    throwOnError = instanceOptions.throwOnError || false,
     headers,
     signal,
     responseType = "json",
@@ -91,7 +91,7 @@ async function fetcher<
 
     return transformedDataWithType as FetcherReturn<TResponseType, TSchema>;
   } catch (error) {
-    if (throwOnError || instanceOptions.throwOnError) {
+    if (throwOnError) {
       if (instanceOptions.onErrorThrown) {
         instanceOptions.onErrorThrown(error as TError);
       }
