@@ -1,4 +1,4 @@
-import { unknown, z } from "zod";
+import { z } from "zod/v4";
 import {
   getHeaders,
   getBody,
@@ -21,7 +21,7 @@ async function fetcher<
   TMethod extends HTTPMethod,
   TError extends unknown,
   TResponseType extends ResponseType | undefined = undefined,
-  TSchema extends z.ZodType | undefined = undefined
+  TSchema extends z.core.$ZodType | undefined = undefined
 >(
   fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema>,
   instanceOptions: FetcherInstanceOptions<TError>
@@ -71,7 +71,8 @@ async function fetcher<
       transformedData as TransformedData<ResponseType>;
 
     if (schema) {
-      const parsed = schema.safeParse(transformedDataWithType);
+      const parsed = z.core.safeParse(schema, transformedDataWithType);
+
       if (!parsed.success) {
         const errorMessages = parsed.error.issues.map((issue) => {
           return `Field '${issue.path.join(
