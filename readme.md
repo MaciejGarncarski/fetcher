@@ -29,7 +29,7 @@ bun add @maciekdev/fetcher
 ## Example usage
 
 ```ts
-import { z } from "zod";
+import { z } from "zod/v4";
 import { createFetcherInstance } from "@maciekdev/fetcher";
 
 export const fetcher = createFetcherInstance({

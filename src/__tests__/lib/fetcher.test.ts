@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { createFetcherInstance } from "../../lib/fetcher.js";
 import {
   bufferMock,
@@ -6,15 +5,10 @@ import {
   postsMock,
   setupHTTPMocks,
 } from "../__mocks__/http.js";
-import { FetcherError } from "../../lib/fetcher-error.js";
 
 setupHTTPMocks();
 
 const fetcher = createFetcherInstance({
-  baseURL: "https://dummy.endpoint",
-});
-
-const fetcherWithFetcherError = createFetcherInstance({
   baseURL: "https://dummy.endpoint",
 });
 
