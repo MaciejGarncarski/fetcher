@@ -100,7 +100,7 @@ async function fetcher<
           headers: responseHeaders,
           data: transformedDataWithType,
           statusCode: response.status,
-          message: `Parsing failed: ${errorMessages.toString()}`,
+          message: `Parsing failed: ${errorMessages.join(". ")}`,
         });
       }
 
@@ -132,6 +132,7 @@ async function fetcher<
     if (error instanceof FetcherError) {
       return {
         data: error.data,
+        message: error.message,
         statusCode: error.statusCode,
         headers: error.headers,
       } as FetcherReturn<TResponseType, TSchema>;
