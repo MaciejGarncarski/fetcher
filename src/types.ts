@@ -38,37 +38,39 @@ export type FetcherFunction = <
 export type FetcherReturn<
   TResponseType extends ResponseType | undefined,
   TSchema extends z.core.$ZodType | undefined
-> =
-  | null
-  | (TResponseType extends undefined
-      ? TSchema extends undefined
-        ? Record<string, unknown>
-        : TSchema extends z.core.$ZodType
-        ? z.infer<TSchema>
-        : Record<string, unknown>
-      : TSchema extends undefined
-      ? TResponseType extends "json"
-        ? Record<string, unknown>
-        : TResponseType extends "text"
-        ? string
-        : TResponseType extends "arrayBuffer"
-        ? ArrayBuffer
-        : Record<string, unknown>
+> = null | {
+  statusCode: number;
+  headers: Record<string, string>;
+  data: TResponseType extends undefined
+    ? TSchema extends undefined
+      ? Record<string, unknown>
       : TSchema extends z.core.$ZodType
-      ? TResponseType extends "json"
-        ? z.infer<TSchema>
-        : TResponseType extends "text"
-        ? z.infer<TSchema>
-        : TResponseType extends "arrayBuffer"
-        ? ArrayBuffer
-        : z.infer<TSchema>
-      : TResponseType extends "json"
+      ? z.infer<TSchema>
+      : Record<string, unknown>
+    : TSchema extends undefined
+    ? TResponseType extends "json"
       ? Record<string, unknown>
       : TResponseType extends "text"
       ? string
       : TResponseType extends "arrayBuffer"
       ? ArrayBuffer
-      : Record<string, unknown>);
+      : Record<string, unknown>
+    : TSchema extends z.core.$ZodType
+    ? TResponseType extends "json"
+      ? z.infer<TSchema>
+      : TResponseType extends "text"
+      ? z.infer<TSchema>
+      : TResponseType extends "arrayBuffer"
+      ? ArrayBuffer
+      : z.infer<TSchema>
+    : TResponseType extends "json"
+    ? Record<string, unknown>
+    : TResponseType extends "text"
+    ? string
+    : TResponseType extends "arrayBuffer"
+    ? ArrayBuffer
+    : Record<string, unknown>;
+};
 
 export type TransformedData<TResponseType extends ResponseType> =
   TResponseType extends "json"

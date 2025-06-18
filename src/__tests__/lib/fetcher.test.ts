@@ -23,7 +23,7 @@ describe("fetcher", () => {
           url: "/json",
         });
 
-        expect(response).toEqual(postsMock);
+        expect(response?.data).toEqual(postsMock);
       });
 
       it("should return null when invalid responseType passed and actual response is ArrayBuffer", async () => {
@@ -34,7 +34,7 @@ describe("fetcher", () => {
           url: "/array-buffer",
         });
 
-        expect(response).toEqual(null);
+        expect(response?.data).toEqual(null);
       });
 
       it("should return empty string when invalid responseType passed and actual response is text", async () => {
@@ -45,7 +45,7 @@ describe("fetcher", () => {
           url: "/text",
         });
 
-        expect(response).toEqual(null);
+        expect(response?.data).toEqual(null);
       });
     });
 
@@ -56,7 +56,7 @@ describe("fetcher", () => {
           url: "/json",
         });
 
-        expect(response).toEqual(postsMock);
+        expect(response?.data).toEqual(postsMock);
       });
 
       it("should return null when no responseType passed and actual response is ArrayBuffer", async () => {
@@ -65,7 +65,7 @@ describe("fetcher", () => {
           url: "/array-buffer",
         });
 
-        expect(response).toEqual(null);
+        expect(response?.data).toEqual(null);
       });
 
       it("should return empty string when no responseType passed and actual response is text", async () => {
@@ -74,7 +74,7 @@ describe("fetcher", () => {
           url: "/text",
         });
 
-        expect(response).toEqual(null);
+        expect(response?.data).toEqual(null);
       });
     });
 
@@ -86,7 +86,7 @@ describe("fetcher", () => {
           url: "/json",
         });
 
-        expect(response).toEqual(JSON.stringify(postsMock));
+        expect(response?.data).toEqual(JSON.stringify(postsMock));
       });
 
       it("should return empty string when responseType is 'text' and actual response is ArrayBuffer", async () => {
@@ -96,7 +96,7 @@ describe("fetcher", () => {
           url: "/array-buffer",
         });
 
-        expect(response).toEqual("");
+        expect(response?.data).toEqual("");
       });
 
       it("should return correct text when responseType is 'text' and actual response is text", async () => {
@@ -106,7 +106,7 @@ describe("fetcher", () => {
           url: "/text",
         });
 
-        expect(response).toEqual("mock-text");
+        expect(response?.data).toEqual("mock-text");
       });
     });
 
@@ -118,7 +118,7 @@ describe("fetcher", () => {
           url: "/json",
         });
 
-        expect(response).toEqual(postsMock);
+        expect(response?.data).toEqual(postsMock);
       });
 
       it("should return null when responseType is 'json' and actual response is ArrayBuffer", async () => {
@@ -128,7 +128,7 @@ describe("fetcher", () => {
           url: "/array-buffer",
         });
 
-        expect(response).toEqual(null);
+        expect(response?.data).toEqual(null);
       });
 
       it("should return empty string when responseType is 'json' and actual response is text", async () => {
@@ -138,7 +138,7 @@ describe("fetcher", () => {
           url: "/text",
         });
 
-        expect(response).toEqual(null);
+        expect(response?.data).toEqual(null);
       });
     });
 
@@ -150,7 +150,7 @@ describe("fetcher", () => {
           url: "/json",
         });
 
-        expect(response).toBeInstanceOf(ArrayBuffer);
+        expect(response?.data).toBeInstanceOf(ArrayBuffer);
       });
 
       it("should return correct arrayBuffer data when responseType is 'arrayBuffer' and actual response is ArrayBuffer", async () => {
@@ -160,7 +160,7 @@ describe("fetcher", () => {
           url: "/array-buffer",
         });
 
-        expect(response).toEqual(bufferMock);
+        expect(response?.data).toEqual(bufferMock);
       });
 
       it("should return arrayBuffer data when responseType is 'arrayBuffer' and actual response is text", async () => {
@@ -170,7 +170,7 @@ describe("fetcher", () => {
           url: "/text",
         });
 
-        expect(response).toBeInstanceOf(ArrayBuffer);
+        expect(response?.data).toBeInstanceOf(ArrayBuffer);
       });
     });
   });
@@ -195,6 +195,39 @@ describe("fetcher", () => {
           schema: postMockSchema,
         })
       ).resolves.not.toThrow();
+    });
+  });
+
+  describe("headers", () => {
+    it("should return correct headers", async () => {
+      const response = await fetcher({
+        method: "GET",
+        url: "/headers",
+      });
+
+      expect(response?.headers).toMatchObject({
+        "x-test-header": "confirm",
+      });
+    });
+  });
+
+  describe("status code", () => {
+    it("should return correct 200 status code", async () => {
+      const response = await fetcher({
+        method: "GET",
+        url: "/headers",
+      });
+
+      expect(response?.statusCode).toEqual(200);
+    });
+
+    it("should return correct 404 status code", async () => {
+      const response = await fetcher({
+        method: "GET",
+        url: "/not-found",
+      });
+
+      expect(response?.statusCode).toEqual(404);
     });
   });
 });

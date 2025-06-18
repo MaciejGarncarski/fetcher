@@ -1,20 +1,20 @@
 export type FetcherErrorData = {
   message: string;
+  data?: unknown;
   statusCode?: number;
-  toastMessage?: string;
-  additionalMessage?: string;
+  headers: Record<string, string>;
 };
 
 export class FetcherError extends Error {
   statusCode?: number;
-  toastMessage?: string;
-  additionalMessage?: string;
+  data?: unknown;
+  headers: Record<string, string>;
 
   constructor(data: FetcherErrorData) {
     super(data.message);
     this.message = data.message;
+    this.data = data.data;
     this.statusCode = data.statusCode;
-    this.toastMessage = data.toastMessage;
-    this.additionalMessage = data.additionalMessage;
+    this.headers = data.headers;
   }
 }

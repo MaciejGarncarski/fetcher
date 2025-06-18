@@ -69,6 +69,29 @@ export const restHandlers = [
       { status: 500 }
     );
   }),
+  http.get(`${BASE_URL}/headers`, () => {
+    return HttpResponse.json(
+      {
+        message: "Foo",
+      },
+      {
+        status: 200,
+        headers: {
+          "x-test-header": "confirm",
+        },
+      }
+    );
+  }),
+  http.get(`${BASE_URL}/not-found`, () => {
+    return HttpResponse.json(
+      {
+        message: "Foo",
+      },
+      {
+        status: 404,
+      }
+    );
+  }),
 ];
 
 const server = setupServer(...restHandlers);

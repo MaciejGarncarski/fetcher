@@ -54,9 +54,25 @@ async function fetcher<
     });
 
     if (!response.ok) {
-      const responseJson = await response.json();
-      throw responseJson;
+      const responseHeaders = Object.fromEntries(response.headers.entries());
+
+      let responseData = null;
+
+      try {
+        responseData = await response.json();
+      } catch (error) {
+        responseData = null;
+      }
+
+      throw new FetcherError({
+        message: "Request failed",
+        data: responseData,
+        headers: responseHeaders,
+        statusCode: response.status,
+      });
     }
+
+    const responseHeaders = Object.fromEntries(response.headers.entries());
 
     const transformedData =
       responseType === "arrayBuffer"
@@ -81,16 +97,25 @@ async function fetcher<
         });
 
         throw new FetcherError({
-          additionalMessage: errorMessages.toString(),
+          headers: responseHeaders,
+          data: transformedDataWithType,
           statusCode: response.status,
-          message: "parsing failed",
+          message: `Parsing failed: ${errorMessages.toString()}`,
         });
       }
 
-      return parsed.data as FetcherReturn<TResponseType, TSchema>;
+      return {
+        statusCode: response.status,
+        headers: responseHeaders,
+        data: parsed.data,
+      } as FetcherReturn<TResponseType, TSchema>;
     }
 
-    return transformedDataWithType as FetcherReturn<TResponseType, TSchema>;
+    return {
+      statusCode: response.status,
+      headers: responseHeaders,
+      data: transformedDataWithType,
+    } as FetcherReturn<TResponseType, TSchema>;
   } catch (error) {
     if (throwOnError) {
       if (instanceOptions.onErrorThrown) {
@@ -104,7 +129,17 @@ async function fetcher<
       throw error;
     }
 
-    return null as FetcherReturn<TResponseType, TSchema>;
+    if (error instanceof FetcherError) {
+      return {
+        data: error.data,
+        statusCode: error.statusCode,
+        headers: error.headers,
+      } as FetcherReturn<TResponseType, TSchema>;
+    }
+
+    return {
+      data: null,
+    } as FetcherReturn<TResponseType, TSchema>;
   }
 }
 
