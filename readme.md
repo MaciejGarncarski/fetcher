@@ -33,7 +33,7 @@ import { z } from "zod/v4";
 import { createFetcherInstance } from "@maciekdev/fetcher";
 
 export const fetcher = createFetcherInstance({
-  baseURL: "https://myfabulousAPI.test",
+  baseURL: "https://yourApiPath.com",
 });
 
 const zodSchema = z.object({
@@ -46,7 +46,7 @@ const myData = await fetcher({
   schema: zodSchema,
 });
 
-console.log(myData?.username);
+console.log(myData?.data.username);
 /*
 username: string | undefined
 
