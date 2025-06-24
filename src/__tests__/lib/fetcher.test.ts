@@ -1,4 +1,6 @@
-import { z } from "zod/v4";
+import * as z from "zod/v4/mini";
+z.config(z.locales.en());
+
 import { createFetcherInstance } from "../../lib/fetcher.js";
 import {
   bufferMock,

@@ -1,7 +1,8 @@
 import { afterAll, afterEach, beforeAll } from "vitest";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
-import * as z from "zod/v4";
+import * as z from "zod/v4/mini";
+z.config(z.locales.en());
 
 export const postMockSchema = z.array(
   z.object({
