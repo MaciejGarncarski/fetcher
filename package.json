@@ -42,12 +42,10 @@
     "package.json"
   ],
   "types": "./dist/index.d.ts",
-  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.js"
     }
   },
   "devDependencies": {
@@ -64,7 +62,7 @@
     "vitest": "^3.0.9"
   },
   "peerDependencies": {
-    "zod": "^3.25.0"
+    "zod": "^3.25.67"
   },
   "packageManager": "pnpm@10.11.0"
 }

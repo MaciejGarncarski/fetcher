@@ -1,5 +1,5 @@
 /* v8 ignore next */
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 
 export type ResponseType = "json" | "text" | "arrayBuffer";
 export type HTTPMethod = "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
