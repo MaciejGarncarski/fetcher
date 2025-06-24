@@ -9,22 +9,37 @@ export type FetcherOptions<
   TMethod extends HTTPMethod,
   TResponseType extends ResponseType | undefined = undefined,
   TSchema extends z.core.$ZodType | undefined = undefined
-> = {
-  responseType?: TResponseType;
-  method: TMethod;
-  url: string;
-  body?: TMethod extends "POST" | "PUT" | "PATCH" ? Body : never;
-  schema?: TResponseType extends "arrayBuffer" ? never : TSchema;
-  throwOnError?: boolean;
-  signal?: AbortSignal;
-  headers?: Record<string, string>;
-  onErrorThrown?: (err: unknown) => void;
-};
+> =
+  | {
+      responseType?: TResponseType;
+      method: TMethod;
+      url: string;
+      body?: TMethod extends "POST" | "PUT" | "PATCH" ? Body : never;
+      schema?: TResponseType extends "arrayBuffer" ? never : TSchema;
+      throwOnError?: boolean;
+      signal?: AbortSignal;
+      onErrorThrown?: (err: unknown) => void;
+      headers: Record<string, string>;
+      headerMergeStrategy?: "merge" | "overwrite";
+    }
+  | {
+      responseType?: TResponseType;
+      method: TMethod;
+      url: string;
+      body?: TMethod extends "POST" | "PUT" | "PATCH" ? Body : never;
+      schema?: TResponseType extends "arrayBuffer" ? never : TSchema;
+      throwOnError?: boolean;
+      signal?: AbortSignal;
+      onErrorThrown?: (err: unknown) => void;
+      headers?: undefined;
+      headerMergeStrategy?: never;
+    };
 
 export type FetcherInstanceOptions<T extends unknown> = {
   onErrorThrown?: (err: T) => void;
   baseURL?: string;
   throwOnError?: boolean;
+  headers?: Record<string, string>;
 };
 
 export type FetcherFunction = <

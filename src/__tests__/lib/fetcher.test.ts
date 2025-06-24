@@ -1,3 +1,4 @@
+import { z } from "zod/v4";
 import { createFetcherInstance } from "../../lib/fetcher.js";
 import {
   bufferMock,
@@ -131,11 +132,21 @@ describe("fetcher", () => {
         expect(response?.data).toEqual(null);
       });
 
-      it("should return empty string when responseType is 'json' and actual response is text", async () => {
+      it("should return null when responseType is 'json' and actual response is text", async () => {
         const response = await fetcher({
           method: "GET",
           responseType: "json",
           url: "/text",
+        });
+
+        expect(response?.data).toEqual(null);
+      });
+
+      it("should return null on error when responseType is 'json' and actual response is text", async () => {
+        const response = await fetcher({
+          method: "GET",
+          responseType: "json",
+          url: "/not-found-text",
         });
 
         expect(response?.data).toEqual(null);
@@ -196,6 +207,19 @@ describe("fetcher", () => {
         })
       ).resolves.not.toThrow();
     });
+
+    it("should throw when data does not conforms to the schema", async () => {
+      await expect(
+        fetcher({
+          method: "GET",
+          url: "/json",
+          throwOnError: true,
+          schema: z.object({
+            foo: z.literal("bar"),
+          }),
+        })
+      ).rejects.toThrow();
+    });
   });
 
   describe("headers", () => {
@@ -228,6 +252,50 @@ describe("fetcher", () => {
       });
 
       expect(response?.statusCode).toEqual(404);
+    });
+  });
+
+  describe("onErrorThrown", () => {
+    it("should run callback on instance onErrorThrown", async () => {
+      const callback = vi.fn();
+
+      const customInstance = createFetcherInstance({
+        baseURL: "https://dummy.endpoint",
+        onErrorThrown: callback,
+      });
+
+      await expect(
+        customInstance({
+          method: "GET",
+          url: "/not-found",
+          throwOnError: true,
+        })
+      )
+        .rejects.toThrow()
+        .then(() => {
+          expect(callback).toHaveBeenCalled();
+          expect(callback).toHaveBeenCalledWith(expect.any(Error));
+          expect(callback).toBeCalledTimes(1);
+        });
+    });
+
+    it("should run callback on per call onErrorThrown", async () => {
+      const callback = vi.fn();
+
+      await expect(
+        fetcher({
+          method: "GET",
+          url: "/not-found",
+          onErrorThrown: callback,
+          throwOnError: true,
+        })
+      )
+        .rejects.toThrow()
+        .then(() => {
+          expect(callback).toHaveBeenCalled();
+          expect(callback).toHaveBeenCalledWith(expect.any(Error));
+          expect(callback).toBeCalledTimes(1);
+        });
     });
   });
 });

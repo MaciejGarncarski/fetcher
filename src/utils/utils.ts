@@ -16,16 +16,58 @@ export function parseUrl(url: string, baseURL: string) {
   return url.startsWith("http") ? url : baseURL + url;
 }
 
-export function getHeaders(
-  transformedBody?: Body | null,
-  headers?: Record<string, string>
-): Headers {
+type GetHeadersProps = {
+  transformedBody?: Body | null;
+  headers?: Record<string, string>;
+  instanceHeaders?: Record<string, string> | null;
+  headerMergeStrategy: "merge" | "overwrite";
+};
+
+export function getHeaders({
+  headers,
+  instanceHeaders,
+  headerMergeStrategy = "merge",
+  transformedBody,
+}: GetHeadersProps): Headers {
   const fetchHeaders = new Headers();
 
   const isMultipartRequest = transformedBody instanceof FormData;
 
   if (!isMultipartRequest) {
     fetchHeaders.append("Content-Type", "application/json");
+  }
+
+  if (headerMergeStrategy === "merge") {
+    if (instanceHeaders) {
+      Object.entries(instanceHeaders).forEach(([key, value]) => {
+        fetchHeaders.append(key, value);
+      });
+    }
+
+    if (headers) {
+      Object.entries(headers).forEach(([key, value]) => {
+        fetchHeaders.append(key, value);
+      });
+    }
+
+    return fetchHeaders;
+  }
+
+  if (headerMergeStrategy === "overwrite") {
+    Object.entries({
+      ...instanceHeaders,
+      ...headers,
+    }).forEach(([key, value]) => {
+      fetchHeaders.append(key, value);
+    });
+
+    return fetchHeaders;
+  }
+
+  if (instanceHeaders) {
+    Object.entries(instanceHeaders).forEach(([key, value]) => {
+      fetchHeaders.append(key, value);
+    });
   }
 
   if (headers) {

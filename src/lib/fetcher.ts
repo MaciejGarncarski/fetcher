@@ -36,14 +36,19 @@ async function fetcher<
     signal,
     responseType = "json",
     onErrorThrown,
+    headerMergeStrategy = "merge",
   } = fetcherOptions;
 
   const { baseURL = "" } = instanceOptions;
 
   try {
     const fetchBody = getBody(body, method);
-    const transformedFetchBody = transformBody(body, method);
-    const fetchHeaders = getHeaders(fetchBody, headers);
+    const transformedFetchBody = transformBody(fetchBody, method);
+    const fetchHeaders = getHeaders({
+      headers,
+      instanceHeaders: instanceOptions.headers,
+      headerMergeStrategy,
+    });
 
     const response = await fetch(parseUrl(url, baseURL), {
       body: transformedFetchBody,
@@ -151,8 +156,9 @@ export const createFetcherInstance = <TError extends unknown>(
     baseURL = "",
     onErrorThrown,
     throwOnError = false,
+    headers,
   } = fetcherInstanceOptions || {};
 
   return (fetcherConfig) =>
-    fetcher(fetcherConfig, { baseURL, onErrorThrown, throwOnError });
+    fetcher(fetcherConfig, { baseURL, onErrorThrown, throwOnError, headers });
 };

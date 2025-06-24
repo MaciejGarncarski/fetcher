@@ -52,17 +52,80 @@ describe("parseUrl", () => {
 
 describe("getHeaders", () => {
   it('should contain "Content-Type": "application/json" when passed object in body', () => {
-    const headers = getHeaders({});
+    const headers = getHeaders({
+      headers: {},
+      headerMergeStrategy: "merge",
+    });
 
     expect(headers.get("Content-Type")).toEqual("application/json");
   });
 
   it("should return passed headers", () => {
-    const headers = getHeaders(null, {
-      "X-Test-Header": "foo",
+    const headers = getHeaders({
+      headers: {
+        "X-Test-Header": "foo",
+      },
+      headerMergeStrategy: "merge",
     });
 
     expect(headers.get("X-Test-Header")).toEqual("foo");
+  });
+
+  it("should merge headers", () => {
+    const headers = getHeaders({
+      headers: {
+        "X-Test-Header": "foo",
+      },
+      instanceHeaders: {
+        "X-Test-Header": "foo1",
+      },
+      headerMergeStrategy: "merge",
+    });
+
+    expect(headers.get("X-Test-Header")).toEqual("foo1, foo");
+  });
+
+  it("should overwrite headers", () => {
+    const headers = getHeaders({
+      instanceHeaders: {
+        "X-Test-Header": "foo1",
+      },
+      headers: {
+        "X-Test-Header": "foo",
+      },
+      headerMergeStrategy: "overwrite",
+    });
+
+    expect(headers.get("X-Test-Header")).toEqual("foo");
+  });
+
+  it("should merge headers by default", () => {
+    // @ts-ignore
+    const headers = getHeaders({
+      headers: {
+        "X-Test-Header": "foo",
+      },
+      instanceHeaders: {
+        "X-Test-Header": "foo1",
+      },
+    });
+
+    expect(headers.get("X-Test-Header")).toEqual("foo1, foo");
+  });
+
+  it("should merge if mergeStrategy is invalid type", () => {
+    const headers = getHeaders({
+      // @ts-ignore
+      headerMergeStrategy: "foo",
+      headers: {
+        "X-Test-Header": "foo",
+      },
+      instanceHeaders: {
+        "X-Test-Header": "foo1",
+      },
+    });
+
+    expect(headers.get("X-Test-Header")).toEqual("foo1, foo");
   });
 });
 

@@ -92,6 +92,12 @@ export const restHandlers = [
       }
     );
   }),
+
+  http.get(`${BASE_URL}/not-found-text`, () => {
+    return HttpResponse.html("<p>error</p>", {
+      status: 404,
+    });
+  }),
 ];
 
 const server = setupServer(...restHandlers);
