@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      zod:
-        specifier: ^3.25.67
-        version: 3.25.67
     devDependencies:
       '@semantic-release/git':
         specifier: ^10.0.1
@@ -45,6 +41,9 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@22.15.33)(msw@2.10.2(@types/node@22.15.33)(typescript@5.8.3))
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
 
 packages:
 
