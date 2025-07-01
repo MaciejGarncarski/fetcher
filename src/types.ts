@@ -85,6 +85,7 @@ export type FetcherReturn<
     : TResponseType extends "arrayBuffer"
     ? ArrayBuffer
     : Record<string, unknown>;
+  isError?: boolean;
 };
 
 export type TransformedData<TResponseType extends ResponseType> =

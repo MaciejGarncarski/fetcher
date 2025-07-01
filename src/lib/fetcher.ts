@@ -67,12 +67,12 @@ async function fetcher<
 
       try {
         responseData = await response.json();
-      } catch (error) {
+      } catch {
         responseData = null;
       }
 
       throw new FetcherError({
-        message: "Request failed",
+        errorMessage: "Request failed",
         data: responseData,
         headers: responseHeaders,
         statusCode: response.status,
@@ -104,10 +104,10 @@ async function fetcher<
         });
 
         throw new FetcherError({
+          errorMessage: `Parsing failed: ${errorMessages.join(". ")}`,
           headers: responseHeaders,
           data: transformedDataWithType,
           statusCode: response.status,
-          message: `Parsing failed: ${errorMessages.join(". ")}`,
         });
       }
 
@@ -115,6 +115,7 @@ async function fetcher<
         statusCode: response.status,
         headers: responseHeaders,
         data: parsed.data,
+        isError: false,
       } as FetcherReturn<TResponseType, TSchema>;
     }
 
@@ -122,6 +123,7 @@ async function fetcher<
       statusCode: response.status,
       headers: responseHeaders,
       data: transformedDataWithType,
+      isError: false,
     } as FetcherReturn<TResponseType, TSchema>;
   } catch (error) {
     if (throwOnError) {
@@ -142,11 +144,13 @@ async function fetcher<
         message: error.message,
         statusCode: error.statusCode,
         headers: error.headers,
+        isError: true,
       } as FetcherReturn<TResponseType, TSchema>;
     }
 
     return {
       data: null,
+      isError: true,
     } as FetcherReturn<TResponseType, TSchema>;
   }
 }
