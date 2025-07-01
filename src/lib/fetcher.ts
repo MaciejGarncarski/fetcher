@@ -141,7 +141,7 @@ async function fetcher<
     if (error instanceof FetcherError) {
       return {
         data: error.data,
-        message: error.message,
+        errorMessage: error.errorMessage,
         statusCode: error.statusCode,
         headers: error.headers,
         isError: true,
