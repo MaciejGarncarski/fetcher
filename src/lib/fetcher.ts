@@ -1,5 +1,4 @@
-import * as z from "zod/v4/mini";
-z.config(z.locales.en());
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 import {
   getHeaders,
@@ -18,12 +17,13 @@ import type {
   ResponseType,
   TransformedData,
 } from "../types.js";
+import { standardValidate } from "../utils/standard-validate.js";
 
 async function fetcher<
   TMethod extends HTTPMethod,
   TError extends unknown,
   TResponseType extends ResponseType | undefined = undefined,
-  TSchema extends z.core.$ZodType | undefined = undefined
+  TSchema extends StandardSchemaV1 | undefined = undefined
 >(
   fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema>,
   instanceOptions: FetcherInstanceOptions<TError>
@@ -94,17 +94,11 @@ async function fetcher<
       transformedData as TransformedData<ResponseType>;
 
     if (schema) {
-      const parsed = z.core.safeParse(schema, transformedDataWithType);
+      const parsed = await standardValidate(schema, transformedDataWithType);
 
       if (!parsed.success) {
-        const errorMessages = parsed.error.issues.map((issue) => {
-          return `Field '${issue.path.join(
-            "."
-          )}' ${issue.message.toLowerCase()}`;
-        });
-
         throw new FetcherError({
-          errorMessage: `Parsing failed: ${errorMessages.join(". ")}`,
+          errorMessage: `Parsing failed! ${JSON.stringify(parsed.issues)}`,
           headers: responseHeaders,
           data: transformedDataWithType,
           statusCode: response.status,

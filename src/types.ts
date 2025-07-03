@@ -1,5 +1,5 @@
 /* v8 ignore next */
-import * as z from "zod/v4/mini";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 export type ResponseType = "json" | "text" | "arrayBuffer";
 export type HTTPMethod = "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
@@ -8,7 +8,7 @@ export type Body = FormData | Record<string, unknown>;
 export type FetcherOptions<
   TMethod extends HTTPMethod,
   TResponseType extends ResponseType | undefined = undefined,
-  TSchema extends z.core.$ZodType | undefined = undefined
+  TSchema extends StandardSchemaV1 | undefined = undefined
 > =
   | {
       responseType?: TResponseType;
@@ -45,22 +45,22 @@ export type FetcherInstanceOptions<T extends unknown> = {
 export type FetcherFunction = <
   TMethod extends HTTPMethod,
   TResponseType extends ResponseType | undefined = undefined,
-  TSchema extends z.core.$ZodType | undefined = undefined
+  TSchema extends StandardSchemaV1 | undefined = undefined
 >(
   fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema>
 ) => Promise<FetcherReturn<TResponseType, TSchema>>;
 
 export type FetcherReturn<
   TResponseType extends ResponseType | undefined,
-  TSchema extends z.core.$ZodType | undefined
+  TSchema extends StandardSchemaV1 | undefined
 > = null | {
   statusCode: number;
   headers: Record<string, string>;
   data: TResponseType extends undefined
     ? TSchema extends undefined
       ? Record<string, unknown>
-      : TSchema extends z.core.$ZodType
-      ? z.infer<TSchema>
+      : TSchema extends StandardSchemaV1
+      ? StandardSchemaV1.InferOutput<TSchema>
       : Record<string, unknown>
     : TSchema extends undefined
     ? TResponseType extends "json"
@@ -70,14 +70,14 @@ export type FetcherReturn<
       : TResponseType extends "arrayBuffer"
       ? ArrayBuffer
       : Record<string, unknown>
-    : TSchema extends z.core.$ZodType
+    : TSchema extends StandardSchemaV1
     ? TResponseType extends "json"
-      ? z.infer<TSchema>
+      ? StandardSchemaV1.InferOutput<TSchema>
       : TResponseType extends "text"
-      ? z.infer<TSchema>
+      ? StandardSchemaV1.InferOutput<TSchema>
       : TResponseType extends "arrayBuffer"
       ? ArrayBuffer
-      : z.infer<TSchema>
+      : StandardSchemaV1.InferOutput<TSchema>
     : TResponseType extends "json"
     ? Record<string, unknown>
     : TResponseType extends "text"

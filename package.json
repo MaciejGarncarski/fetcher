@@ -62,8 +62,8 @@
     "vitest": "^3.2.4",
     "zod": "^3.25.67"
   },
-  "peerDependencies": {
-    "zod": ">=3.25.0"
-  },
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.11.0",
+  "dependencies": {
+    "@standard-schema/spec": "^1.0.0"
+  }
 }

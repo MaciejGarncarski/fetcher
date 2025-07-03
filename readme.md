@@ -29,6 +29,8 @@ bun add @maciekdev/fetcher
 ## Example usage
 
 ```ts
+// For example, I will use zod.
+// Any standard-schema lbirary is compatible.
 import { z } from "zod/v4";
 import { createFetcherInstance } from "@maciekdev/fetcher";
 
