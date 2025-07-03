@@ -29,8 +29,9 @@ bun add @maciekdev/fetcher
 ## Example usage
 
 ```ts
-// For example, I will use zod.
-// Any standard-schema lbirary is compatible.
+// In this example, the `zod` library is used for schema validation.
+// Fetcher is compatible with any standard schema validation library.
+
 import { z } from "zod/v4";
 import { createFetcherInstance } from "@maciekdev/fetcher";
 
