@@ -16,6 +16,20 @@ const fetcher = createFetcherInstance({
 });
 
 describe("fetcher", () => {
+  describe("createFetcherInstance", () => {
+    it("should work when called without options", async () => {
+      const fetcherWithoutOptions = createFetcherInstance();
+      
+      const response = await fetcherWithoutOptions({
+        method: "GET",
+        url: "https://dummy.endpoint/json",
+      });
+
+      expect(response?.isError).toBe(false);
+      expect(response?.data).toEqual(postsMock);
+    });
+  });
+
   describe("responseType", () => {
     describe("invalid responseType", () => {
       it("should return data when invalid responseType passed and actual response is JSON", async () => {
@@ -298,6 +312,46 @@ describe("fetcher", () => {
           expect(callback).toHaveBeenCalledWith(expect.any(Error));
           expect(callback).toBeCalledTimes(1);
         });
+    });
+  });
+
+  describe("non-FetcherError handling", () => {
+    it("should return error response with message when non-FetcherError is thrown and throwOnError is false", async () => {
+      // Mock fetch to throw a regular Error
+      const originalFetch = global.fetch;
+      global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
+
+      const response = await fetcher({
+        method: "GET",
+        url: "/test",
+        throwOnError: false,
+      });
+
+      expect(response?.isError).toBe(true);
+      expect(response?.data).toBe(null);
+      expect(response?.errorMessage).toBe("Error: Network error");
+
+      // Restore original fetch
+      global.fetch = originalFetch;
+    });
+
+    it("should return error response with 'Unknown error' when non-Error object is thrown and throwOnError is false", async () => {
+      // Mock fetch to throw a non-Error object
+      const originalFetch = global.fetch;
+      global.fetch = vi.fn().mockRejectedValue("String error");
+
+      const response = await fetcher({
+        method: "GET",
+        url: "/test",
+        throwOnError: false,
+      });
+
+      expect(response?.isError).toBe(true);
+      expect(response?.data).toBe(null);
+      expect(response?.errorMessage).toBe("Unknown error");
+
+      // Restore original fetch
+      global.fetch = originalFetch;
     });
   });
 });

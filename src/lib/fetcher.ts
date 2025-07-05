@@ -144,6 +144,7 @@ async function fetcher<
 
     return {
       data: null,
+      errorMessage: error instanceof Error ? `Error: ${error.message}` : "Unknown error",
       isError: true,
     } as FetcherReturn<TResponseType, TSchema>;
   }
