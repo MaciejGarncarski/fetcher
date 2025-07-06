@@ -10,7 +10,6 @@ import { FetcherError } from "./fetcher-error.js";
 
 import type {
   FetcherInstanceOptions,
-  FetcherFunction,
   FetcherOptions,
   FetcherReturn,
   HTTPMethod,
@@ -144,15 +143,26 @@ async function fetcher<
 
     return {
       data: null,
-      errorMessage: error instanceof Error ? `Error: ${error.message}` : "Unknown error",
+      errorMessage:
+        error instanceof Error ? `Error: ${error.message}` : "Unknown error",
       isError: true,
     } as FetcherReturn<TResponseType, TSchema>;
   }
 }
 
+/**
+ * Configuration options for creating a fetcher instance.
+ *
+ * @template T The type of error passed to the onErrorThrown callback.
+ *
+ * @param onErrorThrown Optional callback triggered when an error occurs. Receives the typed error object.
+ * @param baseURL Optional base URL to prepend to all request URLs.
+ * @param throwOnError If true, non-2xx responses will throw an error automatically.
+ * @param headers Optional default headers applied to all requests made by the fetcher instance.
+ */
 export const createFetcherInstance = <TError extends unknown>(
   fetcherInstanceOptions?: FetcherInstanceOptions<TError>
-): FetcherFunction => {
+) => {
   const {
     baseURL = "",
     onErrorThrown,
@@ -160,6 +170,41 @@ export const createFetcherInstance = <TError extends unknown>(
     headers,
   } = fetcherInstanceOptions || {};
 
-  return (fetcherConfig) =>
-    fetcher(fetcherConfig, { baseURL, onErrorThrown, throwOnError, headers });
+  /**
+   * The fetcher function used to make typed HTTP requests.
+   *
+   * @template TMethod HTTP method (e.g., "GET", "POST")
+   * @template TResponseType Expected response type ("json", "arrayBuffer", etc.)
+   * @template TSchema Schema to validate the response against
+   *
+   * @param fetcherOptions Options for the request:
+   * @param fetcherOptions.method The HTTP method
+   * @param fetcherOptions.url The endpoint
+   * @param fetcherOptions.body Request body (for POST/PUT/PATCH)
+   * @param fetcherOptions.responseType Type of response to parse
+   * @param fetcherOptions.schema Optional Zod or compatible schema for validation
+   * @param fetcherOptions.throwOnError Whether to throw on non-2xx
+   * @param fetcherOptions.signal Optional AbortSignal
+   * @param fetcherOptions.onErrorThrown Callback for error
+   * @param fetcherOptions.headers Optional headers
+   * @param fetcherOptions.headerMergeStrategy "merge" or "overwrite"
+   *
+   * @returns A Promise resolving to typed response data
+   */
+  return <
+    TMethod extends HTTPMethod,
+    TResponseType extends ResponseType | undefined = undefined,
+    TSchema extends StandardSchemaV1 | undefined = undefined
+  >(
+    fetcherConfig: FetcherOptions<TMethod, TResponseType, TSchema>
+  ) => {
+    const fetcherFn = fetcher(fetcherConfig, {
+      baseURL,
+      onErrorThrown,
+      throwOnError,
+      headers,
+    });
+
+    return fetcherFn;
+  };
 };
