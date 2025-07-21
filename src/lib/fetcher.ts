@@ -37,7 +37,16 @@ async function fetcher<
     signal,
     responseType = "json",
     onErrorThrown,
-    headerMergeStrategy = "merge",
+    headersStrategy = "merge",
+    cache = "default",
+    credentials = "include",
+    keepalive = false,
+    mode = "cors",
+    priority = "auto",
+    redirect = "follow",
+    referrer = "about:client",
+    referrerPolicy,
+    integrity = "",
   } = fetcherOptions;
 
   const { baseURL = "" } = instanceOptions;
@@ -48,15 +57,23 @@ async function fetcher<
     const fetchHeaders = getHeaders({
       headers,
       instanceHeaders: instanceOptions.headers,
-      headerMergeStrategy,
+      headersStrategy,
     });
 
     const response = await fetch(parseUrl(url, baseURL), {
       body: transformedFetchBody,
-      credentials: "include",
+      credentials: credentials,
+      keepalive: keepalive,
       signal: signal,
       headers: fetchHeaders,
       method: method,
+      cache: cache,
+      mode: mode,
+      priority: priority,
+      redirect: redirect,
+      referrer: referrer,
+      referrerPolicy: referrerPolicy,
+      integrity: integrity,
     });
 
     if (!response.ok) {
@@ -187,7 +204,16 @@ export const createFetcherInstance = <TError extends unknown>(
    * @param fetcherOptions.signal Optional AbortSignal
    * @param fetcherOptions.onErrorThrown Callback for error
    * @param fetcherOptions.headers Optional headers
-   * @param fetcherOptions.headerMergeStrategy "merge" or "overwrite"
+   * @param fetcherOptions.headersStrategy "merge" or "overwrite" or "omit-global"
+   * @param fetcherOptions.cache "default" or "no-store" or "no-cache" or "force-cache" or "only-if-cached"
+   * @param fetcherOptions.credentials "include" or "omit" or "same-origin"
+   * @param fetcherOptions.keepalive Whether to keep the connection alive
+   * @param fetcherOptions.mode "cors" or "no-cors" or "same-origin"
+   * @param fetcherOptions.priority "auto" or "high" or "low"
+   * @param fetcherOptions.redirect "follow" or "error" or "manual"
+   * @param fetcherOptions.referrer "about:client" or "client" or "no-referrer"
+   * @param fetcherOptions.referrerPolicy "no-referrer" or "no-referrer-when-downgrade" or "origin" or "origin-when-cross-origin" or "same-origin" or "strict-origin" or "strict-origin-when-cross-origin" or "unsafe-url"
+   * @param fetcherOptions.integrity Optional subresource integrity value
    *
    * @returns A Promise resolving to typed response data
    */

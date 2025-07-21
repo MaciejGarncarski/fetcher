@@ -16,7 +16,7 @@
     "outDir": "dist",
     "sourceMap": true,
     "declaration": true,
-    "lib": ["es2022"],
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
     "types": ["vitest/globals"]
   }
 }

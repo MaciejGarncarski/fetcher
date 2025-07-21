@@ -54,7 +54,7 @@ describe("getHeaders", () => {
   it('should contain "Content-Type": "application/json" when passed object in body', () => {
     const headers = getHeaders({
       headers: {},
-      headerMergeStrategy: "merge",
+      headersStrategy: "merge",
     });
 
     expect(headers.get("Content-Type")).toEqual("application/json");
@@ -65,7 +65,7 @@ describe("getHeaders", () => {
       headers: {
         "X-Test-Header": "foo",
       },
-      headerMergeStrategy: "merge",
+      headersStrategy: "merge",
     });
 
     expect(headers.get("X-Test-Header")).toEqual("foo");
@@ -79,7 +79,7 @@ describe("getHeaders", () => {
       instanceHeaders: {
         "X-Test-Header": "foo1",
       },
-      headerMergeStrategy: "merge",
+      headersStrategy: "merge",
     });
 
     expect(headers.get("X-Test-Header")).toEqual("foo1, foo");
@@ -93,7 +93,22 @@ describe("getHeaders", () => {
       headers: {
         "X-Test-Header": "foo",
       },
-      headerMergeStrategy: "overwrite",
+      headersStrategy: "overwrite",
+    });
+
+    expect(headers.get("X-Test-Header")).toEqual("foo");
+  });
+
+  it("should omit global headers", () => {
+    const headers = getHeaders({
+      instanceHeaders: {
+        "X-Test-Header": "foo1",
+        "X-Test-Header-2": "foo2",
+      },
+      headers: {
+        "X-Test-Header": "foo",
+      },
+      headersStrategy: "omit-global",
     });
 
     expect(headers.get("X-Test-Header")).toEqual("foo");

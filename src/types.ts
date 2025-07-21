@@ -24,6 +24,15 @@ export type FetcherOptions<
   TSchema extends StandardSchemaV1 | undefined = undefined
 > =
   | {
+      integrity?: RequestInit["integrity"];
+      referrerPolicy?: ReferrerPolicy;
+      referrer?: RequestInit["referrer"];
+      redirect?: RequestRedirect;
+      priority?: RequestPriority;
+      mode?: RequestInit["mode"];
+      keepalive?: RequestInit["keepalive"];
+      credentials?: RequestCredentials;
+      cache?: RequestCache;
       responseType?: TResponseType;
       method: TMethod;
       url: string;
@@ -33,9 +42,18 @@ export type FetcherOptions<
       signal?: AbortSignal;
       onErrorThrown?: (err: unknown) => void;
       headers: Record<string, string>;
-      headerMergeStrategy?: "merge" | "overwrite";
+      headersStrategy?: "merge" | "overwrite" | "omit-global";
     }
   | {
+      integrity?: RequestInit["integrity"];
+      referrerPolicy?: ReferrerPolicy;
+      referrer?: RequestInit["referrer"];
+      redirect?: RequestRedirect;
+      priority?: RequestPriority;
+      mode?: RequestInit["mode"];
+      keepalive?: RequestInit["keepalive"];
+      credentials?: RequestCredentials;
+      cache?: RequestCache;
       responseType?: TResponseType;
       method: TMethod;
       url: string;
@@ -45,7 +63,7 @@ export type FetcherOptions<
       signal?: AbortSignal;
       onErrorThrown?: (err: unknown) => void;
       headers?: undefined;
-      headerMergeStrategy?: never;
+      headersStrategy?: never;
     };
 
 export type FetcherInstanceOptions<T = unknown> = {

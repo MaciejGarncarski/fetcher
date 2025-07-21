@@ -20,13 +20,13 @@ type GetHeadersProps = {
   transformedBody?: Body | null;
   headers?: Record<string, string>;
   instanceHeaders?: Record<string, string> | null;
-  headerMergeStrategy: "merge" | "overwrite";
+  headersStrategy: "merge" | "overwrite" | "omit-global";
 };
 
 export function getHeaders({
   headers,
   instanceHeaders,
-  headerMergeStrategy = "merge",
+  headersStrategy = "merge",
   transformedBody,
 }: GetHeadersProps): Headers {
   const fetchHeaders = new Headers();
@@ -37,7 +37,7 @@ export function getHeaders({
     fetchHeaders.append("Content-Type", "application/json");
   }
 
-  if (headerMergeStrategy === "merge") {
+  if (headersStrategy === "merge") {
     if (instanceHeaders) {
       Object.entries(instanceHeaders).forEach(([key, value]) => {
         fetchHeaders.append(key, value);
@@ -53,13 +53,23 @@ export function getHeaders({
     return fetchHeaders;
   }
 
-  if (headerMergeStrategy === "overwrite") {
+  if (headersStrategy === "overwrite") {
     Object.entries({
       ...instanceHeaders,
       ...headers,
     }).forEach(([key, value]) => {
       fetchHeaders.append(key, value);
     });
+
+    return fetchHeaders;
+  }
+
+  if (headersStrategy === "omit-global") {
+    if (headers) {
+      Object.entries(headers).forEach(([key, value]) => {
+        fetchHeaders.append(key, value);
+      });
+    }
 
     return fetchHeaders;
   }
