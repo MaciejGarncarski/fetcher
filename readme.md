@@ -73,6 +73,7 @@ Typesafe!
 
 **Options config:**
 
+```markdown
 - `responseType`?: "json" | "text" | "arrayBuffer";
 - `method`: "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
 - `url`: string;
@@ -81,6 +82,18 @@ Typesafe!
 - `throwOnError`?: boolean;
 - `signal`?: AbortSignal;
 - `headers`?: Record<string, string>;
+- `headersStrategy`?: "merge" | "overwrite" | "omit-global";
+- `cache`?: "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached";
+- `credentials`?: "include" | "omit" | "same-origin";
+- `keepalive`?: boolean;
+- `mode`?: "cors" | "no-cors" | "same-origin";
+- `priority`?: "auto" | "high" | "low";
+- `redirect`?: "follow" | "error" | "manual";
+- `referrer`?: "about:client" | "client" | "no-referrer";
+- `referrerPolicy`?: "no-referrer" | "no-referrer-when-downgrade" | "origin" | "origin-when-cross-origin" | "same-origin" | "strict-origin" | "strict-origin-when-cross-origin" | "unsafe-url";
+- `integrity`?: string;
+- `onErrorThrown`?: (error: Error) => void;
+```
 
 ## License
 
