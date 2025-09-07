@@ -47,6 +47,7 @@ async function fetcher<
     referrer = "about:client",
     referrerPolicy,
     integrity = "",
+    ...other
   } = fetcherOptions;
 
   const { baseURL = "" } = instanceOptions;
@@ -74,6 +75,7 @@ async function fetcher<
       referrer: referrer,
       referrerPolicy: referrerPolicy,
       integrity: integrity,
+      ...other,
     });
 
     if (!response.ok) {
