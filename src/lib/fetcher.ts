@@ -24,7 +24,9 @@ async function fetcher<
   TResponseType extends ResponseType | undefined = undefined,
   TSchema extends StandardSchemaV1 | undefined = undefined
 >(
-  fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema>,
+  fetcherOptions: FetcherOptions<TMethod, TResponseType, TSchema> & {
+    [key: string]: unknown;
+  },
   instanceOptions: FetcherInstanceOptions<TError>
 ) {
   const {
@@ -224,7 +226,9 @@ export const createFetcherInstance = <TError extends unknown>(
     TResponseType extends ResponseType | undefined = undefined,
     TSchema extends StandardSchemaV1 | undefined = undefined
   >(
-    fetcherConfig: FetcherOptions<TMethod, TResponseType, TSchema>
+    fetcherConfig: FetcherOptions<TMethod, TResponseType, TSchema> & {
+      [key: string]: unknown;
+    }
   ) => {
     const fetcherFn = fetcher(fetcherConfig, {
       baseURL,
